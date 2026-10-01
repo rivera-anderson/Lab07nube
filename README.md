@@ -1,12 +1,7 @@
 # 🇵🇪 Peru Vibe
+**Desarrollado por: Anderson Rivera**
 
-## 🎯 Conclusiones del Laboratorio
-
-* A lo largo de este laboratorio, se logró consolidar exitosamente la orquestación de servicios web mediante Docker Compose, empaquetando el backend de Python y el frontend de React para garantizar que la aplicación funcione de manera idéntica y fluida en cualquier entorno sin depender de configuraciones manuales complejas.
-* Se comprobó la enorme eficacia del servidor web Nginx como proxy inverso para gestionar el tráfico de entrada, configurando exitosamente un algoritmo de balanceo de carga de tipo Round Robin que distribuye equitativamente las peticiones de los usuarios hacia tres nodos de backend independientes.
-* Durante la fase de migración a la nube, se evidenció que la integración de un Application Load Balancer junto con un Auto Scaling Group en Amazon Web Services (AWS) resulta vital para mantener la resiliencia del sistema, redireccionando el tráfico dinámicamente solo hacia los servidores que se encuentran totalmente saludables.
-* Se demostró en la práctica que el diseño de una arquitectura distribuida en diferentes Zonas de Disponibilidad asegura una verdadera tolerancia a fallos, lo que garantiza que la plataforma turística siga operativa y sin interrupciones incluso si un centro de datos entero de AWS experimenta una caída.
-* Finalmente, se validó el poder absoluto de la automatización de infraestructura mediante el uso de Launch Templates y scripts de aprovisionamiento (User Data), haciendo posible que nuevas instancias EC2 nazcan en la nube y se auto-configuren desde cero, instalando Docker y levantando la aplicación sin ningún tipo de intervención humana.
+*(Nota: Las conclusiones del laboratorio se encuentran al final de este documento).*
 
 ---
 
@@ -69,3 +64,13 @@ Para desplegar este proyecto en Amazon Web Services, sigue estos pasos:
 - **Frontend:** React, Vite, Tailwind CSS, Framer Motion, React Router DOM.
 - **Backend:** Python 3, Flask, SQLite.
 - **DevOps / Nube:** Docker, Docker Compose, Nginx, AWS (EC2, ALB, ASG, VPC).
+
+---
+
+## 🎯 Conclusiones del Laboratorio
+
+* Se logró orquestar exitosamente el backend (Python) y frontend (React) usando Docker Compose, garantizando que la aplicación funcione de forma idéntica en cualquier entorno sin depender de complejas configuraciones manuales.
+* Se comprobó la eficacia de Nginx como proxy inverso para gestionar el tráfico, implementando un balanceo de carga (Round Robin) que distribuye las peticiones equitativamente hacia tres nodos independientes.
+* Durante la migración a AWS, la integración del Application Load Balancer y el Auto Scaling Group demostró ser vital para la resiliencia del sistema, aislando servidores con fallos y manteniendo la web 100% operativa.
+* El diseño distribuido en diferentes Zonas de Disponibilidad (Multi-AZ) garantizó una verdadera tolerancia a fallos, asegurando la continuidad del servicio incluso ante la caída de un centro de datos entero.
+* Finalmente, se validó el poder de la automatización en la nube mediante Launch Templates y scripts (User Data), logrando que nuevas instancias EC2 nazcan y desplieguen la aplicación automáticamente sin intervención humana ("zero-touch").
