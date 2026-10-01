@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Perú Vibe - Rutas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style> body { background-color: #0f172a; color: #f8fafc; } .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.1); } </style>
+</head>
+<body class="min-h-screen">
+    <!-- Navbar -->
+    <nav class="glass sticky top-0 z-50 px-6 py-4 flex justify-between items-center shadow-lg">
+        <h1 class="text-2xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400">
+            <i class="fa-solid fa-mountain-sun"></i> PERÚ VIBE
+        </h1>
+        <div class="flex items-center gap-4">
+            <span class="text-xs text-gray-400 border border-gray-600 px-3 py-1 rounded-full shadow-inner" id="server-badge">Conectando...</span>
+            <button id="btnLogin" onclick="showLogin()" class="text-sm font-semibold hover:text-red-400 transition"><i class="fa-solid fa-user-shield"></i> Admin</button>
+            <button id="btnLogout" onclick="logout()" class="hidden text-sm font-semibold text-red-500 hover:text-red-400 transition"><i class="fa-solid fa-power-off"></i> Salir</button>
+        </div>
+    </nav>
+
+    <!-- Contenido Principal -->
+    <main class="max-w-6xl mx-auto p-6 mt-8">
+        <div class="flex justify-between items-center mb-10">
+            <h2 class="text-3xl font-light">Explora las <span class="font-bold text-red-400">Mejores Rutas</span></h2>
+            <button id="btnCrear" onclick="showForm()" class="hidden bg-gradient-to-r from-red-600 to-orange-500 px-6 py-2 rounded-full font-bold shadow-lg shadow-red-500/30 hover:scale-105 transition"><i class="fa-solid fa-plus"></i> Nueva Ruta</button>
+        </div>
+        
+        <!-- Feed de Tarjetas -->
+        <div id="rutas-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </main>
+
+    <!-- Modal Formulario -->
+    <div id="modal" class="hidden fixed inset-0 bg-black/80 flex justify-center items-center z-50 backdrop-blur-sm">
+        <div class="glass p-8 rounded-2xl w-96 relative shadow-2xl">
+            <h3 class="text-xl font-bold mb-4" id="modalTitle">Autenticación</h3>
+            <div id="loginForm" class="flex flex-col gap-4">
+                <input type="text" id="user" placeholder="Usuario (admin)" class="bg-slate-800 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                <input type="password" id="pass" placeholder="Contraseña (1234)" class="bg-slate-800 p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500">
+                <button onclick="login()" class="bg-white text-black font-bold py-3 rounded-lg mt-2 hover:bg-gray-200 transition shadow-lg">Ingresar</button>
+            </div>
+            <div id="crudForm" class="hidden flex flex-col gap-4">
+                <input type="text" id="titulo" placeholder="Título de la ruta" class="bg-slate-800 p-3 rounded-lg focus:outline-none">
+                <select id="tipo" class="bg-slate-800 p-3 rounded-lg focus:outline-none text-gray-300">
+                    <option value="Gastronómica">Gastronómica 🍲</option><option value="Cultural">Cultural 🏛️</option><option value="Aventura">Aventura 🏔️</option>
+                </select>
+                <textarea id="descripcion" placeholder="Descripción atractiva..." class="bg-slate-800 p-3 rounded-lg focus:outline-none" rows="3"></textarea>
+                <input type="text" id="imagen" placeholder="URL imagen (unsplash)" value="https://images.unsplash.com/photo-1526392060635-9d6019884377?w=500&q=80" class="bg-slate-800 p-3 rounded-lg focus:outline-none">
+                <button onclick="guardarRuta()" class="bg-gradient-to-r from-red-600 to-orange-500 font-bold py-3 rounded-lg mt-2 shadow-lg shadow-red-500/30 hover:scale-105 transition">Guardar Ruta</button>
+            </div>
+            <button onclick="closeModal()" class="absolute top-4 right-4 text-gray-400 hover:text-white transition"><i class="fa-solid fa-xmark fa-xl"></i></button>
+        </div>
+    </div>
+
+    <script>
+        let token = localStorage.getItem('token');
+        
+        async function loadRutas() {
+            const res = await fetch('/api/rutas');
+            const data = await res.json();
+            
+            // Efecto flash cuando cambia de nodo (Balanceador en accion)
+            const badge = document.getElementById('server-badge');
+            const color = data.nodo == '8081' ? 'text-green-400' : (data.nodo == '8082' ? 'text-blue-400' : 'text-purple-400');
+            badge.innerHTML = `<i class="fa-solid fa-server"></i> NODO ${data.nodo}`;
+            badge.className = `text-xs font-bold border border-gray-500 px-3 py-1 rounded-full shadow-inner transition-all duration-300 ${color}`;
+            
+            const container = document.getElementById('rutas-container');
+            container.innerHTML = '';
+            data.rutas.forEach(r => {
+                container.innerHTML += `
+                    <div class="glass rounded-2xl overflow-hidden group hover:-translate-y-2 transition duration-300 shadow-lg">
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="${r.imagen}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                            <span class="absolute top-3 left-3 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold border border-white/20 shadow-sm">${r.tipo}</span>
+                            ${token ? `<button onclick="borrarRuta(${r.id})" class="absolute top-3 right-3 bg-red-500/90 hover:bg-red-600 text-white w-9 h-9 rounded-full shadow-lg backdrop-blur-md transition hover:scale-110"><i class="fa-solid fa-trash"></i></button>` : ''}
+                        </div>
+                        <div class="p-6">
+                            <h3 class="text-xl font-bold mb-2 text-white">${r.titulo}</h3>
+                            <p class="text-gray-400 text-sm line-clamp-3">${r.descripcion}</p>
+                        </div>
+                    </div>
+                `;
+            });
+            toggleUI();
+        }
+
+        function toggleUI() {
+            document.getElementById('btnLogin').classList.toggle('hidden', token);
+            document.getElementById('btnLogout').classList.toggle('hidden', !token);
+            document.getElementById('btnCrear').classList.toggle('hidden', !token);
+        }
+
+        function showLogin() { document.getElementById('modal').classList.remove('hidden'); document.getElementById('loginForm').classList.remove('hidden'); document.getElementById('crudForm').classList.add('hidden'); document.getElementById('modalTitle').innerText = 'Acceso Restringido'; }
+        function showForm() { document.getElementById('modal').classList.remove('hidden'); document.getElementById('crudForm').classList.remove('hidden'); document.getElementById('loginForm').classList.add('hidden'); document.getElementById('modalTitle').innerText = 'Crear Nueva Ruta'; }
+        function closeModal() { document.getElementById('modal').classList.add('hidden'); }
+        
+        async function login() {
+            const res = await fetch('/api/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({user: document.getElementById('user').value, pass: document.getElementById('pass').value}) });
+            if(res.ok) { token = (await res.json()).token; localStorage.setItem('token', token); closeModal(); loadRutas(); }
+            else alert("Credenciales incorrectas");
+        }
+        
+        function logout() { token = null; localStorage.removeItem('token'); loadRutas(); }
+
+        async function guardarRuta() {
+            const data = { titulo: document.getElementById('titulo').value, tipo: document.getElementById('tipo').value, descripcion: document.getElementById('descripcion').value, imagen: document.getElementById('imagen').value };
+            await fetch('/api/rutas', { method: 'POST', headers: {'Content-Type':'application/json', 'Authorization': token}, body: JSON.stringify(data) });
+            closeModal(); loadRutas();
+        }
+
+        async function borrarRuta(id) {
+            if(confirm("¿Seguro que quieres borrar esta ruta?")) {
+                await fetch(`/api/rutas/${id}`, { method: 'DELETE', headers: {'Authorization': token} });
+                loadRutas();
+            }
+        }
+
+        loadRutas();
+    </script>
+</body>
+</html>
