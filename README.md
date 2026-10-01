@@ -1,11 +1,12 @@
 # 🇵🇪 Peru Vibe
 
 ## 🎯 Conclusiones del Laboratorio
-El presente laboratorio demostró con éxito la implementación de una arquitectura moderna, escalable y de alta disponibilidad, abarcando desde la contenerización local hasta el despliegue automatizado en la nube.
 
-* **Contenerización y Orquestación Local:** Se logró unificar los servicios web utilizando Docker Compose, implementando con éxito un servidor Nginx con balanceo de carga (*Round Robin*) hacia tres nodos backend de Python independientes, simulando un entorno de microservicios robusto.
-* **Despliegue Cloud Resiliente:** La migración a Amazon Web Services (AWS) comprobó la eficacia de combinar *Auto Scaling Groups* y un *Application Load Balancer*. Esto asegura que la aplicación se mantenga operativa distribuyendo el tráfico en diferentes zonas de disponibilidad, logrando tolerancia a fallos.
-* **Automatización de Infraestructura:** El uso de *Launch Templates* y la inyección de scripts en el *User Data* de las instancias EC2 permitió un aprovisionamiento automatizado ("zero-touch"), demostrando cómo instalar Docker, clonar repositorios y levantar contenedores desde cero sin intervención manual.
+* A lo largo de este laboratorio, se logró consolidar exitosamente la orquestación de servicios web mediante Docker Compose, empaquetando el backend de Python y el frontend de React para garantizar que la aplicación funcione de manera idéntica y fluida en cualquier entorno sin depender de configuraciones manuales complejas.
+* Se comprobó la enorme eficacia del servidor web Nginx como proxy inverso para gestionar el tráfico de entrada, configurando exitosamente un algoritmo de balanceo de carga de tipo Round Robin que distribuye equitativamente las peticiones de los usuarios hacia tres nodos de backend independientes.
+* Durante la fase de migración a la nube, se evidenció que la integración de un Application Load Balancer junto con un Auto Scaling Group en Amazon Web Services (AWS) resulta vital para mantener la resiliencia del sistema, redireccionando el tráfico dinámicamente solo hacia los servidores que se encuentran totalmente saludables.
+* Se demostró en la práctica que el diseño de una arquitectura distribuida en diferentes Zonas de Disponibilidad asegura una verdadera tolerancia a fallos, lo que garantiza que la plataforma turística siga operativa y sin interrupciones incluso si un centro de datos entero de AWS experimenta una caída.
+* Finalmente, se validó el poder absoluto de la automatización de infraestructura mediante el uso de Launch Templates y scripts de aprovisionamiento (User Data), haciendo posible que nuevas instancias EC2 nazcan en la nube y se auto-configuren desde cero, instalando Docker y levantando la aplicación sin ningún tipo de intervención humana.
 
 ---
 
